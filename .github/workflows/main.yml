@@ -70,6 +70,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-godot-
 
+            
+      - name: Build export templates (Windows)
+        run: |
+          cd godot
+          scons platform=windows target=template_release arch=x86_64 tools=no d3d12=no
+          scons platform=windows target=editor arch=x86_64 tools=yes d3d12=no
+          cd ..
+
+          
       - name: Build export templates (Linux)
         run: |
           cd godot
@@ -77,12 +86,7 @@ jobs:
           scons platform=linuxbsd target=editor arch=x86_64 tools=yes
           cd ..
 
-      - name: Build export templates (Windows)
-        run: |
-          cd godot
-          scons platform=windows target=template_release arch=x86_64 tools=no
-          scons platform=windows target=editor arch=x86_64 tools=yes
-          cd ..
+
       - name: Build export templates (Web)
         run:  |
           cd godot
