@@ -52,14 +52,14 @@ jobs:
           libxi-dev \
           libxrandr-dev \
           libwayland-dev
-          sudo apt install mingw-w64
+          sudo apt install gcc-mingw-w64-x86-64-posix g++-mingw-w64-x86-64-posix
           git clone https://github.com/emscripten-core/emsdk.git
           cd emsdk
           ./emsdk install latest
           ./emsdk activate latest
           source ./emsdk_env.sh
           cd ..
-          update-alternatives --config x86_64-w64-mingw32-g++
+          
 
       - name: Cache SCons build artifacts
         uses: actions/cache@v3
