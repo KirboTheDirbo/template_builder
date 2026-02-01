@@ -59,6 +59,7 @@ jobs:
           ./emsdk activate latest
           source ./emsdk_env.sh
           cd ..
+          emcc --version
           
 
       - name: Cache SCons build artifacts
@@ -91,7 +92,7 @@ jobs:
       - name: Build export templates (Web)
         run:  |
           cd godot
-          scons platform=web target=template_release
+          scons platform=web target=template_release dlink_enabled=yes
           cd ..
 
       - name: Package Linux build
