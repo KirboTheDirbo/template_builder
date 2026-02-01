@@ -55,8 +55,8 @@ jobs:
           sudo apt install gcc-mingw-w64-x86-64-posix g++-mingw-w64-x86-64-posix
           git clone https://github.com/emscripten-core/emsdk.git
           cd emsdk
-          ./emsdk install latest
-          ./emsdk activate latest
+          ./emsdk install 3.1.62
+          ./emsdk activate 3.1.62
           source ./emsdk_env.sh
           cd ..
           emcc --version
@@ -72,7 +72,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-godot-
 
-            
+
+      - name: Build export templates (Web)
+        run:  |
+          cd godot
+          scons platform=web target=template_release dlink_enabled=yes
+          cd ..
+
       - name: Build export templates (Windows)
         run: |
           cd godot
@@ -89,11 +95,7 @@ jobs:
           cd ..
 
 
-      - name: Build export templates (Web)
-        run:  |
-          cd godot
-          scons platform=web target=template_release dlink_enabled=yes
-          cd ..
+
 
       - name: Package Linux build
         run: |
