@@ -55,8 +55,8 @@ jobs:
           sudo apt install gcc-mingw-w64-x86-64-posix g++-mingw-w64-x86-64-posix
           git clone https://github.com/emscripten-core/emsdk.git
           cd emsdk
-          ./emsdk install 3.1.62
-          ./emsdk activate 3.1.62
+          ./emsdk install 4.0.0
+          ./emsdk activate 4.0.0
           source ./emsdk_env.sh
           cd ..
           emcc --version
