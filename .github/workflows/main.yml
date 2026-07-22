@@ -9,7 +9,7 @@ jobs:
   build_templates:
     runs-on: ubuntu-latest
     env:
-      SCONSFLAGS: verbose=yes warnings=all use_lto=yes lto=full optimize=size
+      SCONSFLAGS: verbose=yes warnings=all use_lto=yes
       SCRIPT_AES256_ENCRYPTION_KEY: ${{ secrets.SCRIPT_AES256_ENCRYPTION_KEY }}
 
     steps:
@@ -37,30 +37,21 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-          build-essential \
-          scons \
-          pkg-config \
-          libx11-dev \
-          libxcursor-dev \
-          libxinerama-dev \
-          libgl1-mesa-dev \
-          libglu1-mesa-dev \
-          libasound2-dev \
-          libpulse-dev \
-          libudev-dev \
-          libxi-dev \
-          libxrandr-dev \
-          libwayland-dev
-          sudo apt install gcc-mingw-w64-x86-64-posix g++-mingw-w64-x86-64-posix
+          sudo apt-get install -y build-essential scons pkg-config python3 \
+               mingw-w64 clang zip unzip curl git cmake
+          sudo update-alternatives --install /usr/bin/x86_64-w64-mingw32-g++ \
+            x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix 100
+          sudo update-alternatives --install /usr/bin/x86_64-w64-mingw32-gcc \
+            x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix 100
+          sudo update-alternatives --set x86_64-w64-mingw32-g++ \
+            /usr/bin/x86_64-w64-mingw32-g++-posix
+          sudo update-alternatives --set x86_64-w64-mingw32-gcc \
+            /usr/bin/x86_64-w64-mingw32-gcc-posix
           git clone https://github.com/emscripten-core/emsdk.git
           cd emsdk
-          ./emsdk install 4.0.0
-          ./emsdk activate 4.0.0
-          source ./emsdk_env.sh
+          ./emsdk install latest
+          ./emsdk activate latest
           cd ..
-          emcc --version
-          
 
       - name: Cache SCons build artifacts
         uses: actions/cache@v3
@@ -72,30 +63,25 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-godot-
 
-
-      - name: Build export templates (Web)
-        run:  |
+      - name: Build export templates (Linux)
+        run: |
           cd godot
-          scons platform=web target=template_release dlink_enabled=yes
+          scons platform=linuxbsd target=template_release tools=no lto=full optimize=size_extra
+          scons platform=linuxbsd target=editor arch=x86_64 tools=yes lto=full optimize=size_extra
           cd ..
 
       - name: Build export templates (Windows)
         run: |
           cd godot
-          scons platform=windows target=template_release arch=x86_64 tools=no d3d12=no
-          scons platform=windows target=editor arch=x86_64 tools=yes d3d12=no
+          scons platform=windows target=template_release arch=x86_64 tools=no lto=full optimize=size
+          scons platform=windows target=editor arch=x86_64 tools=yes lto=full optimize=size_extra
           cd ..
-
-          
-      - name: Build export templates (Linux)
+      - name: Build export templates (Web)
         run: |
+          source emsdk/emsdk_env.sh
           cd godot
-          scons platform=linuxbsd target=template_release tools=no
-          scons platform=linuxbsd target=editor arch=x86_64 tools=yes
+          scons platform=web target=template_release lto=full optimize=size_extra dlink_enabled=yes
           cd ..
-
-
-
 
       - name: Package Linux build
         run: |
@@ -113,7 +99,7 @@ jobs:
         run: |
           mkdir -p templates_web
           cp godot/bin/*web* templates_web/
-          (cd templates_windows && zip -9 -r ../export_templates_web.zip .)
+          (cd templates_web && zip -9 -r ../export_templates_web.zip .)
 
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
