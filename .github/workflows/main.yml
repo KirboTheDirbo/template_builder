@@ -23,7 +23,7 @@ jobs:
 
       - name: Download AES-256 secure script
         run: |
-          curl -L -o aes_secure.py "https://raw.githubusercontent.com/KnifeXRage/Godot-Secure/main/Godot%20Secure%20AES-256.py"
+          curl -L -o aes_secure.py "https://raw.githubusercontent.com/KnifeXRage/Godot-Secure/refs/heads/main/Godot%20Secure%20Scripts/v4.6.x%20-%20Latest/Godot%20Secure%20AES-256%20(Release-v4_v4.6.x%20-%20Latest).py"
 
       - name: Patch AES script for non-interactive use
         run: |
